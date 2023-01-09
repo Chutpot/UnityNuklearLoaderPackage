@@ -1,0 +1,26 @@
+{
+  "name": "com.chutpot.unitynuklearloaderpackage",
+  "version": "0.0.1",
+  "displayName": "Unity Nuklear Loading",
+  "description": "Plugin for loading Nuklear",
+  "unity": "2019.4",
+  "documentationUrl": "https://github.com/Chutpot",
+  "changelogUrl": "https://github.com/Chutpot",
+  "licensesUrl": "https://github.com/Chutpot",
+  "dependencies": {
+  },
+  "keywords": [
+    "Chutpot",
+    "nuklear"
+  ],
+  "author": {
+    "name": "Chutpot",
+    "email": "contact@chutpot.com",
+    "url": "https://www.chutpot.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Chutpot/UnityNuklearLoaderPackage",
+    "revision": ""
+  }
+}

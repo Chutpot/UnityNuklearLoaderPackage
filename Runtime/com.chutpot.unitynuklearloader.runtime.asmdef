@@ -1,0 +1,16 @@
+{
+    "name": "com.chutpot.unitynuklearloader.runtime",
+    "rootNamespace": "Chutpot.Nuklear.Loader",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_EDITOR || DEVELOPMENT_BUILD"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
