@@ -1,6 +1,6 @@
 {
     "name": "com.chutpot.unitynuklearloader.editor",
-    "rootNamespace": "Chutpot.Nuklear.Loader",
+    "rootNamespace": "Chutpot.Nuklear.Loader.Editor",
     "references": [
         "GUID:ce2f2106b11fd0a42b80759d8bef6a09"
     ],

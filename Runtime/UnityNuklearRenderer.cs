@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using AOT;
 using System.Diagnostics;
+using System.Collections;
 
 namespace Chutpot.Nuklear.Loader
 {
@@ -19,11 +20,19 @@ namespace Chutpot.Nuklear.Loader
 
         public delegate void DebugLogCallback(IntPtr log, int size);
 
+        private Coroutine _renderCoroutine;
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
             RegisterDebugCallback(OnDebugCalled);
             ChangeViewport(Screen.currentResolution.width, Screen.currentResolution.height);
+            _renderCoroutine = StartCoroutine(Render());
+        }
+
+        private void OnDestroy()
+        {
+            StopCoroutine(_renderCoroutine);
         }
 
 #if ENABLE_MONO
@@ -37,10 +46,13 @@ namespace Chutpot.Nuklear.Loader
             UnityEngine.Debug.Log(debug_string);
         }
 
-        //Render Over Everything, if Gizmos are enabled nothing will be displayed!
-        private void OnGUI()
+        IEnumerator Render() 
         {
-            GL.IssuePluginEvent(GetRenderEventFunc(), 1);
+            while (true) 
+            {
+                yield return new WaitForEndOfFrame();
+                GL.IssuePluginEvent(GetRenderEventFunc(), 1);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "com.chutpot.unitynuklearloaderpackage",
+  "name": "com.chutpot.unitynuklearloader",
   "version": "0.0.1",
   "displayName": "Unity Nuklear Loading",
   "description": "Plugin for loading Nuklear",
