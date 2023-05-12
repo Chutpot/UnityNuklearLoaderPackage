@@ -2,8 +2,8 @@ using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using AOT;
-using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Chutpot.Nuklear.Loader
 {
@@ -36,11 +36,11 @@ namespace Chutpot.Nuklear.Loader
         }
 
 #if ENABLE_MONO
-        [MonoPInvokeCallback(typeof(DebugLogCallback))]
+        [AOT.MonoPInvokeCallback(typeof(DebugLogCallback))]
 #elif ENABLE_IL2CPP
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 #endif
-        private void OnDebugCalled(IntPtr log, int size)
+        private static void OnDebugCalled(IntPtr log, int size)
         {
             string debug_string = Marshal.PtrToStringAnsi(log, size);
             UnityEngine.Debug.Log(debug_string);
