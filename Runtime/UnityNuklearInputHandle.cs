@@ -174,7 +174,6 @@ namespace Chutpot.Nuklear.Loader
             HandleKeyboardInput();
             SetInputState(false);
         }
-        
 
         private void HandleKeyboardInput() 
         {

@@ -4,9 +4,16 @@ using Chutpot.Nuklear.Loader;
 
 namespace Chutpot.Nuklear.Loader.Editor
 {
-    [CustomEditor(typeof(UnityNuklearRenderer))]
-    public class UnityNuklearRendererInspector : UnityEditor.Editor
+    [CustomEditor(typeof(UnityNuklearDemo))]
+    public class UnityNuklearDemoInspector : UnityEditor.Editor
     {
+        UnityNuklearDemo target;
+
+        private void Awake()
+        {
+            target = (UnityNuklearDemo)base.target;
+        }
+
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -14,12 +21,12 @@ namespace Chutpot.Nuklear.Loader.Editor
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Enable Demo"))
             {
-                UnityNuklearRenderer.SetIsDemoRendering(true);
+                target.Rendering = true;
             }
 
             if (GUILayout.Button("Disable Demo"))
             {
-                UnityNuklearRenderer.SetIsDemoRendering(false);
+                target.Rendering = false;
             }
             EditorGUILayout.EndHorizontal();
         }

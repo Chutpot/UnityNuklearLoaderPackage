@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 3257509531492005132}
   - component: {fileID: -8657242424896681795}
   - component: {fileID: 7840141171513816353}
+  - component: {fileID: -337855949373088478}
+  - component: {fileID: -2516467253287613928}
   m_Layer: 0
-  m_Name: UnityNuklearManager
+  m_Name: UnityNuklearLoader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,5 +57,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98db848c3d3f8f94ab504b34b2a53770, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-337855949373088478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3257509531492005133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1a0043ae6cbb4d4a80a3600965e5ca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2516467253287613928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3257509531492005133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f98acc1324ab5734cbe32e3dfe812168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
