@@ -5,6 +5,8 @@ using AOT;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using NuklearDotNet;
+using static NuklearDotNet.Nuklear;
 
 namespace Chutpot.Nuklear.Loader
 {
@@ -55,7 +57,7 @@ namespace Chutpot.Nuklear.Loader
     };
 
 
-    public class UnityNuklearInputHandle : MonoBehaviour
+    public unsafe class UnityNuklearInputHandle : MonoBehaviour
     {
         Dictionary<KeyCode, char> keycodeToChar = new Dictionary<KeyCode, char>()
         {
@@ -145,34 +147,29 @@ namespace Chutpot.Nuklear.Loader
           {KeyCode.Alpha9, '9'}
         };
 
-
-        [DllImport("UnityNuklearLoader", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void SetKeyboardInput(int key, bool isDown);
-        [DllImport("UnityNuklearLoader", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void SetMouseInput(float posX, float posY, float scrollDeltaX, float scrollDeltaY);
-        [DllImport("UnityNuklearLoader", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void SetCharInput(char c);
-        [DllImport("UnityNuklearLoader", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void SetButtonInput(int key, bool isDown);
-        [DllImport("UnityNuklearLoader", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void SetInputState(bool isOpen);
-
         private KeyCode[] _keyCodes;
 
         static char ch;
+
+        private nk_context* _ctx;
 
         private void Awake()
         {
             _keyCodes = (KeyCode[])Enum.GetValues(typeof(KeyCode));
         }
 
+        private void Start()
+        {
+            _ctx = UnityNuklearRenderer.Ctx;
+        }
+
 
         private void Update()
         {
-            SetInputState(true);
+            nk_input_begin(UnityNuklearRenderer.Ctx);
             HandleMouseInput();
             HandleKeyboardInput();
-            SetInputState(false);
+            nk_input_end(UnityNuklearRenderer.Ctx);
         }
 
         private void HandleKeyboardInput() 
@@ -180,61 +177,61 @@ namespace Chutpot.Nuklear.Loader
 
             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {
-                SetKeyboardInput((int)NKKeys.NK_KEY_COPY, Input.GetKeyDown(KeyCode.C));
-                SetKeyboardInput((int)NKKeys.NK_KEY_PASTE, Input.GetKeyDown(KeyCode.V));
-                SetKeyboardInput((int)NKKeys.NK_KEY_CUT, Input.GetKeyDown(KeyCode.X));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_UNDO, Input.GetKeyDown(KeyCode.Z));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_REDO, Input.GetKeyDown(KeyCode.R));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_WORD_LEFT, Input.GetKeyDown(KeyCode.LeftArrow));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_WORD_RIGHT, Input.GetKeyDown(KeyCode.RightArrow));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_LINE_START, Input.GetKeyDown(KeyCode.B));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_LINE_END, Input.GetKeyDown(KeyCode.E));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_SELECT_ALL, Input.GetKeyDown(KeyCode.A));
+                nk_input_key(_ctx, NkKeys.Copy, Convert.ToInt32(Input.GetKeyDown(KeyCode.C)));
+                nk_input_key(_ctx, NkKeys.Paste, Convert.ToInt32(Input.GetKeyDown(KeyCode.V)));
+                nk_input_key(_ctx, NkKeys.Cut, Convert.ToInt32(Input.GetKeyDown(KeyCode.X)));
+                nk_input_key(_ctx, NkKeys.TextUndo, Convert.ToInt32(Input.GetKeyDown(KeyCode.Z)));
+                nk_input_key(_ctx, NkKeys.TextRedo, Convert.ToInt32(Input.GetKeyDown(KeyCode.R)));
+                nk_input_key(_ctx, NkKeys.TextWordRight, Convert.ToInt32(Input.GetKeyDown(KeyCode.RightArrow)));
+                nk_input_key(_ctx, NkKeys.TextWordLeft, Convert.ToInt32(Input.GetKeyDown(KeyCode.LeftArrow)));
+                nk_input_key(_ctx, NkKeys.LineStart, Convert.ToInt32(Input.GetKeyDown(KeyCode.B)));
+                nk_input_key(_ctx, NkKeys.LineEnd, Convert.ToInt32(Input.GetKeyDown(KeyCode.E)));
+                nk_input_key(_ctx, NkKeys.TextSelectAll, Convert.ToInt32(Input.GetKeyDown(KeyCode.A)));
             }
             else
             {
-                SetKeyboardInput((int)NKKeys.NK_KEY_DEL, Input.GetKeyDown(KeyCode.Delete));
-                SetKeyboardInput((int)NKKeys.NK_KEY_ENTER, Input.GetKeyDown(KeyCode.Return));               
-                SetKeyboardInput((int)NKKeys.NK_KEY_TAB, Input.GetKeyDown(KeyCode.Tab));
-                SetKeyboardInput((int)NKKeys.NK_KEY_BACKSPACE, Input.GetKeyDown(KeyCode.Backspace));
-                SetKeyboardInput((int)NKKeys.NK_KEY_UP, Input.GetKeyDown(KeyCode.UpArrow));
-                SetKeyboardInput((int)NKKeys.NK_KEY_DOWN, Input.GetKeyDown(KeyCode.DownArrow));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_START, Input.GetKeyDown(KeyCode.Home));
-                SetKeyboardInput((int)NKKeys.NK_KEY_TEXT_END, Input.GetKeyDown(KeyCode.End));
-                SetKeyboardInput((int)NKKeys.NK_KEY_SCROLL_START, Input.GetKeyDown(KeyCode.Home));
-                SetKeyboardInput((int)NKKeys.NK_KEY_SCROLL_END, Input.GetKeyDown(KeyCode.End));
-                SetKeyboardInput((int)NKKeys.NK_KEY_SCROLL_DOWN, Input.GetKeyDown(KeyCode.PageDown));
-                SetKeyboardInput((int)NKKeys.NK_KEY_SCROLL_UP, Input.GetKeyDown(KeyCode.PageUp));
-                SetKeyboardInput((int)NKKeys.NK_KEY_SHIFT, Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
+                nk_input_key(_ctx, NkKeys.Del, Convert.ToInt32(Input.GetKeyDown(KeyCode.Delete)));
+                nk_input_key(_ctx, NkKeys.Enter, Convert.ToInt32(Input.GetKeyDown(KeyCode.Return)));
+                nk_input_key(_ctx, NkKeys.Tab, Convert.ToInt32(Input.GetKeyDown(KeyCode.Tab)));
+                nk_input_key(_ctx, NkKeys.Backspace, Convert.ToInt32(Input.GetKeyDown(KeyCode.Backspace)));
+                nk_input_key(_ctx, NkKeys.Up, Convert.ToInt32(Input.GetKeyDown(KeyCode.UpArrow)));
+                nk_input_key(_ctx, NkKeys.Down, Convert.ToInt32(Input.GetKeyDown(KeyCode.DownArrow)));
+                nk_input_key(_ctx, NkKeys.TextStart, Convert.ToInt32(Input.GetKeyDown(KeyCode.Home)));
+                nk_input_key(_ctx, NkKeys.TextEnd, Convert.ToInt32(Input.GetKeyDown(KeyCode.End)));
+                nk_input_key(_ctx, NkKeys.ScrollStart, Convert.ToInt32(Input.GetKeyDown(KeyCode.Home)));
+                nk_input_key(_ctx, NkKeys.ScrollEnd, Convert.ToInt32(Input.GetKeyDown(KeyCode.End)));
+                nk_input_key(_ctx, NkKeys.ScrollDown, Convert.ToInt32(Input.GetKeyDown(KeyCode.PageDown)));
+                nk_input_key(_ctx, NkKeys.ScrollUp, Convert.ToInt32(Input.GetKeyDown(KeyCode.PageUp)));
+                nk_input_key(_ctx, NkKeys.Shift, Convert.ToInt32(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)));
 
                 foreach (KeyCode key in _keyCodes)
                 {
                     if (Input.GetKeyDown(key) && keycodeToChar.TryGetValue(key, out ch))
-                        SetCharInput(ch);
+                        nk_input_unicode(_ctx, ch);
                 }
 
-
-                SetKeyboardInput((int)NKKeys.NK_KEY_LEFT, Input.GetKeyDown(KeyCode.RightArrow));
-                SetKeyboardInput((int)NKKeys.NK_KEY_RIGHT, Input.GetKeyDown(KeyCode.LeftArrow));
-                SetKeyboardInput((int)NKKeys.NK_KEY_COPY, false);
-                SetKeyboardInput((int)NKKeys.NK_KEY_PASTE, false);
-                SetKeyboardInput((int)NKKeys.NK_KEY_CUT, false);
-                SetKeyboardInput((int)NKKeys.NK_KEY_SHIFT, false);
+                nk_input_key(_ctx, NkKeys.Left, Convert.ToInt32(Input.GetKeyDown(KeyCode.LeftArrow)));
+                nk_input_key(_ctx, NkKeys.Right, Convert.ToInt32(Input.GetKeyDown(KeyCode.RightArrow)));
+                nk_input_key(_ctx, NkKeys.Copy, 0);
+                nk_input_key(_ctx, NkKeys.Paste, 0);
+                nk_input_key(_ctx, NkKeys.Cut, 0);
+                nk_input_key(_ctx, NkKeys.Shift, 0);
             }
 
 
             //SetButtonInput((int)NKButtons.NK_BUTTON_DOUBLE, Input.GetMouseButton(0));
-            SetButtonInput((int)NKButtons.NK_BUTTON_LEFT, Input.GetMouseButton(0));
 
-            SetButtonInput((int)NKButtons.NK_BUTTON_RIGHT, Input.GetMouseButton(1));
+            nk_input_button(_ctx, nk_buttons.NK_BUTTON_LEFT, (int)Input.mousePosition.x, (Screen.currentResolution.height - (int)Input.mousePosition.y), Convert.ToInt32(Input.GetMouseButton(0)));
+            nk_input_button(_ctx, nk_buttons.NK_BUTTON_RIGHT, (int)Input.mousePosition.x, (Screen.currentResolution.height - (int)Input.mousePosition.y), Convert.ToInt32(Input.GetMouseButton(1)));
+            nk_input_button(_ctx, nk_buttons.NK_BUTTON_MIDDLE, (int)Input.mousePosition.x, (Screen.currentResolution.height - (int)Input.mousePosition.y), Convert.ToInt32(Input.GetMouseButton(2)));
 
-            SetButtonInput((int)NKButtons.NK_BUTTON_MIDDLE, Input.GetMouseButton(2));
         }
 
         //need reverse y axis because unity y axis reverse to Nuklear
         private void HandleMouseInput() 
         {
-            SetMouseInput(Input.mousePosition.x, Screen.currentResolution.height - Input.mousePosition.y, Input.mouseScrollDelta.x, Input.mouseScrollDelta.y);
+            nk_input_motion(UnityNuklearRenderer.Ctx, (int)Input.mousePosition.x, (Screen.currentResolution.height - (int)Input.mousePosition.y));
+            nk_input_scroll(UnityNuklearRenderer.Ctx, new nk_vec2(Input.mouseScrollDelta.x, Input.mouseScrollDelta.y));
         }
     }
 }

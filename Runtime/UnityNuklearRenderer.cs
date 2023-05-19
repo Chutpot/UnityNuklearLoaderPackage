@@ -30,6 +30,8 @@ namespace Chutpot.Nuklear.Loader
 
         private static nk_context* _ctx;
 
+        internal static nk_context* Ctx { get { return _ctx; } }
+
         private void Awake()
         {
             _ctx = GetContext();
