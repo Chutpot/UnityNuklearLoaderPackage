@@ -7,6 +7,10 @@ using System.Collections;
 using System.Collections.Generic;
 using NuklearDotNet;
 using static NuklearDotNet.Nuklear;
+using System.Linq;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace Chutpot.Nuklear.Loader
 {
@@ -59,6 +63,7 @@ namespace Chutpot.Nuklear.Loader
 
     public unsafe class UnityNuklearInputHandle : MonoBehaviour
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         Dictionary<KeyCode, char> keycodeToChar = new Dictionary<KeyCode, char>()
         {
           //-------------------------LOGICAL mappings-------------------------
@@ -148,14 +153,111 @@ namespace Chutpot.Nuklear.Loader
         };
 
         private KeyCode[] _keyCodes;
+#elif ENABLE_INPUT_SYSTEM
+        Dictionary<Key, char> keycodeToChar = new Dictionary<Key, char>()
+        {
+          //-------------------------LOGICAL mappings-------------------------
+  
+          //Lower Case Letters
+          {Key.A, 'a'},
+          {Key.B, 'b'},
+          {Key.C, 'c'},
+          {Key.D, 'd'},
+          {Key.E, 'e'},
+          {Key.F, 'f'},
+          {Key.G, 'g'},
+          {Key.H, 'h'},
+          {Key.I, 'i'},
+          {Key.J, 'j'},
+          {Key.K, 'k'},
+          {Key.L, 'l'},
+          {Key.M, 'm'},
+          {Key.N, 'n'},
+          {Key.O, 'o'},
+          {Key.P, 'p'},
+          {Key.Q, 'q'},
+          {Key.R, 'r'},
+          {Key.S, 's'},
+          {Key.T, 't'},
+          {Key.U, 'u'},
+          {Key.V, 'v'},
+          {Key.W, 'w'},
+          {Key.X, 'x'},
+          {Key.Y, 'y'},
+          {Key.Z, 'z'},
+  
+          //KeyPad Numbers
+          {Key.Numpad0, '0'},
+          {Key.Numpad1, '1'},
+          {Key.Numpad2, '2'},
+          {Key.Numpad3, '3'},
+          {Key.Numpad4, '4'},
+          {Key.Numpad5, '5'},
+          {Key.Numpad6, '6'},
+          {Key.Numpad7, '7'},
+          {Key.Numpad8, '8'},
+          {Key.Numpad9, '9'},
+  
+          //Other Symbols
+          //{Key.Exclaim, '!'}, //1
+          //{Key.DoubleQuote, '"'},
+          //{Key.Hash, '#'}, //3
+          //{Key.Dollar, '$'}, //4
+          //{Key.Ampersand, '&'}, //7
+          {Key.Quote, '\''}, //remember the special forward slash rule... this isnt wrong
+          //{Key.LeftParen, '('}, //9
+          //{Key.RightParen, ')'}, //0
+          //{Key.Asterisk, '*'}, //8
+          {Key.NumpadPlus, '+'},
+          {Key.Comma, ','},
+          {Key.Minus, '-'},
+          {Key.Period, '.'},
+          {Key.Slash, '/'},
+          //{Key.Colon, ':'},
+          {Key.Semicolon, ';'},
+          {Key.Space, ' '},
+          //{Key.Less, '<'},
+          {Key.Equals, '='},
+          //{Key.Greater, '>'},
+          //{Key.Question, '?'},
+          //{Key.At, '@'}, //2
+          {Key.LeftBracket, '['},
+          {Key.Backslash, '\\'}, //remember the special forward slash rule... this isnt wrong
+          {Key.RightBracket, ']'},
+          //{Key.Caret, '^'}, //6
+          //{Key.Underscore, '_'},
+          {Key.Backquote, '`'},
+  
+          //-------------------------NON-LOGICAL mappings-------------------------
+
+          {Key.Digit0, '0'},
+          {Key.Digit1, '1'},
+          {Key.Digit2, '2'},
+          {Key.Digit3, '3'},
+          {Key.Digit4, '4'},
+          {Key.Digit5, '5'},
+          {Key.Digit6, '6'},
+          {Key.Digit7, '7'},
+          {Key.Digit8, '8'},
+          {Key.Digit9, '9'}
+        };
+
+        private Keyboard _keyboard = Keyboard.current;
+        private Mouse _mouse = Mouse.current;
+        private Key[] _keyCodes;
+#endif
+
 
         static char ch;
-
         private nk_context* _ctx;
 
         private void Awake()
         {
-            _keyCodes = (KeyCode[])Enum.GetValues(typeof(KeyCode));
+#if ENABLE_LEGACY_INPUT_MANAGER
+            _keyCodes = keycodeToChar.Keys.ToArray();
+#elif ENABLE_INPUT_SYSTEM
+            _keyCodes = keycodeToChar.Keys.ToArray();
+#endif
         }
 
         private void Start()
@@ -175,6 +277,7 @@ namespace Chutpot.Nuklear.Loader
         private void HandleKeyboardInput() 
         {
 
+#if ENABLE_LEGACY_INPUT_MANAGER
             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {
                 nk_input_key(_ctx, NkKeys.Copy, Convert.ToInt32(Input.GetKeyDown(KeyCode.C)));
@@ -225,13 +328,69 @@ namespace Chutpot.Nuklear.Loader
             nk_input_button(_ctx, nk_buttons.NK_BUTTON_RIGHT, (int)Input.mousePosition.x, (Screen.currentResolution.height - (int)Input.mousePosition.y), Convert.ToInt32(Input.GetMouseButton(1)));
             nk_input_button(_ctx, nk_buttons.NK_BUTTON_MIDDLE, (int)Input.mousePosition.x, (Screen.currentResolution.height - (int)Input.mousePosition.y), Convert.ToInt32(Input.GetMouseButton(2)));
 
+#elif ENABLE_INPUT_SYSTEM
+            if (_keyboard.leftCtrlKey.wasPressedThisFrame || _keyboard.rightCtrlKey.wasPressedThisFrame)
+            {
+                nk_input_key(_ctx, NkKeys.Copy, Convert.ToInt32(_keyboard.cKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Paste, Convert.ToInt32(_keyboard.vKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Cut, Convert.ToInt32(_keyboard.xKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.TextUndo, Convert.ToInt32(_keyboard.zKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.TextRedo, Convert.ToInt32(_keyboard.rKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.TextWordRight, Convert.ToInt32(_keyboard.rightAppleKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.TextWordLeft, Convert.ToInt32(_keyboard.leftArrowKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.LineStart, Convert.ToInt32(_keyboard.bKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.LineEnd, Convert.ToInt32(_keyboard.eKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.TextSelectAll, Convert.ToInt32(_keyboard.aKey.wasPressedThisFrame));
+            }
+            else
+            {
+                nk_input_key(_ctx, NkKeys.Del, Convert.ToInt32(_keyboard.deleteKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Enter, Convert.ToInt32(_keyboard.enterKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Tab, Convert.ToInt32(_keyboard.tabKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Backspace, Convert.ToInt32(_keyboard.backspaceKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Up, Convert.ToInt32(_keyboard.upArrowKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Down, Convert.ToInt32(_keyboard.downArrowKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.TextStart, Convert.ToInt32(_keyboard.homeKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.TextEnd, Convert.ToInt32(_keyboard.endKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.ScrollStart, Convert.ToInt32(_keyboard.homeKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.ScrollEnd, Convert.ToInt32(_keyboard.endKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.ScrollDown, Convert.ToInt32(_keyboard.pageDownKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.ScrollUp, Convert.ToInt32(_keyboard.pageUpKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Shift, Convert.ToInt32(_keyboard.leftShiftKey.wasPressedThisFrame || _keyboard.rightShiftKey.wasPressedThisFrame));
+
+                foreach (Key key in _keyCodes)
+                {
+                    if (_keyboard[key].wasPressedThisFrame && keycodeToChar.TryGetValue(key, out ch))
+                        nk_input_unicode(_ctx, ch);
+                }
+
+                nk_input_key(_ctx, NkKeys.Left, Convert.ToInt32(_keyboard.leftArrowKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Right, Convert.ToInt32(_keyboard.rightArrowKey.wasPressedThisFrame));
+                nk_input_key(_ctx, NkKeys.Copy, 0);
+                nk_input_key(_ctx, NkKeys.Paste, 0);
+                nk_input_key(_ctx, NkKeys.Cut, 0);
+                nk_input_key(_ctx, NkKeys.Shift, 0);
+            }
+
+
+            //SetButtonInput((int)NKButtons.NK_BUTTON_DOUBLE, Input.GetMouseButton(0));
+
+            nk_input_button(_ctx, nk_buttons.NK_BUTTON_LEFT, (int)_mouse.position.x.value, (Screen.currentResolution.height - (int)_mouse.position.y.value), Convert.ToInt32(_mouse.leftButton.isPressed));
+            nk_input_button(_ctx, nk_buttons.NK_BUTTON_RIGHT, (int)_mouse.position.x.value, (Screen.currentResolution.height - (int)_mouse.position.y.value), Convert.ToInt32(_mouse.rightButton.isPressed));
+            nk_input_button(_ctx, nk_buttons.NK_BUTTON_MIDDLE, (int)_mouse.position.x.value, (Screen.currentResolution.height - (int)_mouse.position.y.value), Convert.ToInt32(_mouse.middleButton.isPressed));
+#endif
         }
 
         //need reverse y axis because unity y axis reverse to Nuklear
         private void HandleMouseInput() 
         {
+#if ENABLE_LEGACY_INPUT_MANAGER
             nk_input_motion(UnityNuklearRenderer.Ctx, (int)Input.mousePosition.x, (Screen.currentResolution.height - (int)Input.mousePosition.y));
             nk_input_scroll(UnityNuklearRenderer.Ctx, new nk_vec2(Input.mouseScrollDelta.x, Input.mouseScrollDelta.y));
+#elif ENABLE_INPUT_SYSTEM
+            nk_input_motion(UnityNuklearRenderer.Ctx, (int)_mouse.position.x.value, (Screen.currentResolution.height - (int)_mouse.position.y.value));
+            nk_input_scroll(UnityNuklearRenderer.Ctx, new nk_vec2(_mouse.scroll.value.x * Time.deltaTime, _mouse.scroll.value.y * Time.deltaTime));
+#endif
         }
     }
 }

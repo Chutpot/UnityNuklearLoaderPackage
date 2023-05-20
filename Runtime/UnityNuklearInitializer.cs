@@ -7,7 +7,7 @@ namespace Chutpot.Nuklear.Loader
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void RuntimeInitializeOnLoadMethodAfterSceneLoad() 
         {
-            Debug.developerConsoleVisible = false;
+            Debug.developerConsoleVisible = true;
             GameObject loader = MonoBehaviour.Instantiate(Resources.Load("UnityNuklearLoader", typeof(GameObject))) as GameObject;
             MonoBehaviour.DontDestroyOnLoad(loader);
         }

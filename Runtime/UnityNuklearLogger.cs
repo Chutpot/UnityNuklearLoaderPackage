@@ -20,11 +20,7 @@ namespace Chutpot.Nuklear.Loader
         }
 
 
-#if ENABLE_MONO
         [AOT.MonoPInvokeCallback(typeof(DebugLogCallback))]
-#elif ENABLE_IL2CPP
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-#endif
         private static void OnDebugCalled(IntPtr log, int size)
         {
             string debug_string = Marshal.PtrToStringAnsi(log, size);

@@ -11,7 +11,7 @@ namespace Chutpot.Nuklear.Loader
 {
     public unsafe interface INuklearApp
     {
-        public void Render(nk_context* ctx);
+        public unsafe void Render(nk_context* ctx);
     }
 
     public unsafe class UnityNuklearRenderer : MonoBehaviour
@@ -71,6 +71,12 @@ namespace Chutpot.Nuklear.Loader
             {
                 app.Render(_ctx);
             }
+        }
+
+        [MonoPInvokeCallback(typeof(nk_plugin_filter_t))]
+        public static int NkPluginFilterCallback(ref nk_text_edit edit, uint unicode_rune)
+        {
+            return 1;
         }
     }
 }
